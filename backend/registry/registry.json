@@ -1,0 +1,15 @@
+{
+  "tokens": [
+    {
+      "name": "SRFX",
+      "issuer": "rDgBV9WrwJ3WwtRWhkekMhDas3muFeKvoS",
+      "currency": "SRFX",
+      "description": "SurferX ecosystem token (Phase 1 registry entry).",
+      "links": {
+        "website": "https://surferx.io"
+      }
+    }
+  ],
+  "nfts": [],
+  "games": []
+}
