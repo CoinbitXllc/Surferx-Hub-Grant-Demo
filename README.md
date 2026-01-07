@@ -1,102 +1,101 @@
-# SurferX Hub – XRPL Grant Technical Design Overview
+# SurferX Hub — Phase 1 MVP (XRPL On-Chain Discovery & Interaction Layer)
 
-Welcome to the public-facing technical repository for **SurferX Hub**, the all-in-one decentralized marketplace, gaming, and NFT platform built on the **XRP Ledger**. This repository is designed to showcase our technical design, XRPL integrations, and project architecture for XRPL Grant reviewers.
+SurferX Hub is a **non-custodial**, **read-only** discovery and interaction layer for XRPL assets:
+- **Token discovery** (XRPL tokens / issuers / trustline context)
+- **DEX Market Listing (read-only)** for **XRPL AMM pools** (price/liquidity/volume + deep links)
+- **NFT utility layer (Phase-1 light)** (holder verification, collection stats, deep links to XRP.cafe)
+- **Gaming Gateway (non-custodial)** (wallet connect, NFT-gated access, achievement proofs)
+- **TrustLock™ MVP** (XRPL escrow-based lock registry + public proof-of-lock)
 
----
-
-## 🔧 System Design Overview
-
-### 🧱 Architecture Diagram
-(See `/docs/system-architecture.pdf` for full visual system flow)
-
-```
-Users (Gamers, Creators, Traders)
-    ↓
-[ Frontend (Web / Mobile / Telegram) ]
-    ↓
-[ API Gateway (Node.js / Express) ]
-    ↓
-[ XRPL Integrations Layer ]
-    ↓
-├── XLS-20 NFT Minting & Display
-├── DEX Market Listing (XRPL DEX API + AMM)
-├── Token Creation (Trustline Setup)
-├── Wallet Login (Xumm / Ledger / Xaman)
-├── XRPL Hooks (Future Rewards Logic)
-    ↓
-[ Database & Game Logic Layer (Firebase / MongoDB) ]
-    ↓
-[ Admin Dashboard / Analytics / Monitoring ]
-```
+> 🚫 No custody  
+> 🚫 No in-app trading  
+> 🚫 No speculation features  
+> ✅ Read-only data + deep links to trusted wallets/UIs (e.g., Xaman)
 
 ---
 
-## 🧪 XRPL Integration Points
+## Why this exists (Plain English)
 
-| Module                    | XRPL Feature Used               |
-|--------------------------|----------------------------------|
-| NFT Viewer & Minting     | XLS-20                          |
-| DEX Market Listing       | XRPL DEX API, AMM support       |
-| SurferX IDO Launchpad    | Trustlines, Token Creation      |
-| Wallet Authentication    | Xumm SDK, Ledger, Xaman         |
-| GameFi Wallet Rewards    | Payment Transactions, Hooks     |
-| PODs Store Payments      | XRP / Stablecoin (RLUSD planned)|
+XRPL users and builders are forced to hop between explorers, token lists, AMM tools, NFT sites, and wallets.
+SurferX Hub unifies these discovery workflows into a single interface while keeping execution in user-controlled tools.
+
+This is the anchor product for the SurferX ecosystem and a Phase-1 deliverable for XRPL Grants.
 
 ---
 
-## 🧰 Code Organization (Planned)
+## Phase-1 Modules
 
+### 1) SurferX Hub (Core Platform)
+- Token discovery (search, filters, verified badges)
+- Project profile pages (on-chain data + metadata)
+- Wallet connect (for verification/gating only)
+
+### 2) DEX Market Listing (Read-Only + Deep Links)
+- Index XRPL AMM pools
+- Show price, liquidity, volume (read-only)
+- Deep-link out to wallet/DEX UIs for execution (no trading inside SurferX)
+
+### 3) NFT Utility Layer (Phase-1 Light)
+- NFT holder verification (connected wallet)
+- NFT-gated access to selected features/games
+- Collection stats + deep links to XRP.cafe
+
+### 4) Gaming Gateway (Non-Custodial)
+- Wallet connect
+- NFT gating
+- Achievement proofs (read-only tracking / references)
+- 🚫 No gambling, no payouts
+
+### 5) TrustLock™ (Phase-1 MVP)
+- Escrow-based token/LP locking (XRPL escrow)
+- Public proof-of-lock registry page
+- Countdown timers + explorer links
+
+---
+
+## Architecture (MVP)
+
+**Frontend**
+- Web app (Next.js/React recommended)
+- Wallet connect modal (Xaman / WalletConnect if applicable)
+- Read-only views + deep-link actions
+
+**Backend**
+- API service for indexed views (tokens, pools, NFTs, projects)
+- Job workers for indexing + caching
+- Database for cached snapshots + verification status + metadata
+
+**On-chain Data Sources**
+- XRPL public nodes (read-only queries)
+- AMM pool data from XRPL ledger methods
+- NFT collection references (XRPL + links to XRP.cafe)
+- TrustLock escrow proofs via XRPL transactions
+
+> NOTE: SurferX Hub does not custody funds or execute trades.  
+> All execution happens externally via user wallets / trusted UIs.
+
+---
+
+## Repositories (Suggested)
+This repo can be monorepo or split:
+- `apps/web` — frontend
+- `apps/api` — backend API
+- `packages/indexer` — indexer jobs
+- `packages/shared` — shared types/utils
+- `infra/` — deployment manifests (Docker, Terraform, etc.)
+
+---
+
+## Getting Started (Local)
+
+### Prereqs
+- Node.js (LTS)
+- pnpm or npm
+- A database (Postgres recommended) or SQLite for MVP
+- Access to an XRPL public endpoint (or your own node)
+
+### Install
 ```bash
-surferx-hub-grant-demo/
-├── README.md
-├── frontend/                 # Next.js + Tailwind
-│   ├── pages/
-│   ├── components/
-│   └── xrpl-wallet-auth/
-├── backend/                  # Node.js + Express
-│   ├── routes/
-│   └── services/
-├── xrpl-integrations/       # XLS-20, AMM, Token Creation
-│   ├── nft-mint.js
-│   ├── token-launch.js
-│   └── wallet-checker.js
-├── docs/
-│   └── system-architecture.pdf
-└── mockups/
-    ├── dex-ui-preview.png
-    └── nft-viewer.png
-```
-
----
-
-## 🧱 Frameworks & Libraries
-
-- **Frontend**: Next.js, React, Tailwind CSS, Framer Motion
-- **Backend**: Node.js, Express.js
-- **Database**: Firebase (for games), MongoDB (for user/token/NFT metadata)
-- **XRPL SDKs**: `xrpl.js`, `xumm-sdk`, `xaman-sdk`
-- **XRPL APIs**: XPMarket API, Sologenic, DEX Streaming APIs
-
----
-
-## 🔮 Future Enhancements
-
-- XRPL **Hooks via Xahau** for reward automation and smart token logic
-- **RLUSD** stablecoin support for merch store and in-game purchases
-- Automated trustline setup and token badge system
-- Multi-chain NFT mirror options (Phase 2)
-
----
-
-## 📂 GitHub Repo Access
-
-This repo is **public** and created specifically for XRPL Grant reviewers. Our production repositories remain private under CoinbitX LLC.
-
-**Repo URL:** https://github.com/CoinbitXllc/surferx-hub-grant-demo
-
-For questions or access to deeper technical documentation, please contact the team via [info@surferx.io](mailto:info@surferx.io).
-
----
-
-**Updated:** December 2025  
-**Maintainer:** CoinbitX LLC / SurferX Team
+git clone <YOUR_REPO_URL>
+cd surferx-hub
+pnpm install
